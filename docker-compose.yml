@@ -1,0 +1,24 @@
+services:
+  db:
+    image: mysql:5.7
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: ghani123
+      MYSQL_DATABASE: ateb
+      MYSQL_USER: ghani
+      MYSQL_PASSWORD: tafir
+    ports:
+      - "9906:3306"
+  web:
+    image: wyveo/nginx-php-fpm:php81
+    container_name: web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/usr/share/nginx/html
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+    
