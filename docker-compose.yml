@@ -1,7 +1,7 @@
 services:
   db:
     image: mysql:5.7
-    container_name: database
+    container_name: xml-database
     environment:
       MYSQL_ROOT_PASSWORD: ghani123
       MYSQL_DATABASE: ateb
@@ -11,7 +11,7 @@ services:
       - "9906:3306"
   web:
     image: wyveo/nginx-php-fpm:php81
-    container_name: web
+    container_name: xml-web
     ports:
       - "8080:80"
     volumes:
@@ -21,4 +21,13 @@ services:
       - db
     stdin_open: true
     tty: true
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: xml-phpmyadmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - PMA_ARBITRARY=1
     
