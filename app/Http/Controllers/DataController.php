@@ -10,19 +10,19 @@ class DataController extends Controller
 {
     public function getData()
     {
-        // $response = Http::get('http://webserver.flak.no/vbilder/FlakXMLStockBalance.xml');
+        $response = Http::get('http://webserver.flak.no/vbilder/FlakXMLStockBalance.xml');
 
-        // $new = simplexml_load_string($response->body());
+        $new = simplexml_load_string($response->body());
   
         // Convert into json
-        // $con = json_encode($new);
+        $con = json_encode($new);
         
         // Convert into associative array
-        // $newArr = json_decode($con, true);
+        $newArr = json_decode($con, true);
 
         // dd($newArr['StockBalances']['StockBalance']);
 
-        // return json_encode($newArr['StockBalances']['StockBalance']);
+        return json_decode(json_encode($newArr['StockBalances']['StockBalance']));
 
         $arr = [
             [
