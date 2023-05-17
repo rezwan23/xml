@@ -10,7 +10,7 @@ class DataController extends Controller
 {
     public function getData()
     {
-        $response = Http::get('http://webserver.flak.no/vbilder/FlakXMLStockBalance.xml');
+        $response = Http::timeout(60)->get('http://webserver.flak.no/vbilder/FlakXMLStockBalance.xml');
 
         $new = simplexml_load_string($response->body());
   
@@ -20,7 +20,7 @@ class DataController extends Controller
         // Convert into associative array
         $newArr = json_decode($con, true);
 
-        // dd($newArr['StockBalances']['StockBalance']);
+        dd($newArr['StockBalances']['StockBalance']);
 
         return json_decode(json_encode($newArr['StockBalances']['StockBalance']));
 
