@@ -34,7 +34,9 @@ class DataController extends Controller
         ];
 
 
-        return json_encode($arr);
+        return json_decode(json_encode($arr), true);
+
+
 
 
     }
