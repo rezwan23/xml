@@ -26,7 +26,7 @@ class DataController extends Controller
             $arr = [];
         }
 
-        $data = DB::table('products')->whereIn('ProductNo', $request->productNos)->get();
+        $data = DB::table('products')->whereIn('ProductNo', $arr)->get();
 
         return $data;
     }
