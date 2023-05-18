@@ -16,7 +16,7 @@ use App\Http\Controllers\DataController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 Route::get('/get-data', [DataController::class, 'getData']);
