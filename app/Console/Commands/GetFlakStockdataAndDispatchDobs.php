@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use App\Jobs\ProductDataEntryJob;
 use Illuminate\Database\Schema\Blueprint;
 
 class GetFlakStockdataAndDispatchDobs extends Command
@@ -23,7 +23,7 @@ class GetFlakStockdataAndDispatchDobs extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Get XML Data From Flak API And Store It to Database';
 
     /**
      * Execute the console command.
@@ -56,7 +56,7 @@ class GetFlakStockdataAndDispatchDobs extends Command
 
 
         foreach($data as $singleDataArr){
-            dispatch(new ProductDataEntryJob($singleDataArr));
+            DB::table('products')->insert($singleDataArr);
         }
     }
 }
