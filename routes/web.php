@@ -20,3 +20,7 @@ Route::get('/', function () {
 });
 
 Route::get('/get-data', [DataController::class, 'getData']);
+
+Route::post('/get-products-data', [DataController::class, 'getProductsData']);
+
+
