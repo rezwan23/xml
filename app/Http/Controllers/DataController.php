@@ -19,6 +19,13 @@ class DataController extends Controller
 
     public function getProductsData(Request $request)
     {
+
+        if($request->productNos && is_array($request->productNos)){
+            $arr = $request->productNos;
+        }else{
+            $arr = [];
+        }
+
         $data = DB::table('products')->whereIn('ProductNo', $request->productNos)->get();
 
         return $data;
