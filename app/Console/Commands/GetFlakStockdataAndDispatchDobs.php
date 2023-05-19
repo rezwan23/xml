@@ -40,7 +40,7 @@ class GetFlakStockdataAndDispatchDobs extends Command
         });
 
 
-        $response = Http::timeout(60)->get('http://webserver.flak.no/vbilder/FlakXMLStockBalance.xml');
+        $response = Http::timeout(120)->get('http://webserver.flak.no/vbilder/FlakXMLStockBalance.xml');
 
         $new = simplexml_load_string($response->body());
   
