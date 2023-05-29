@@ -24,3 +24,5 @@ Route::get('/get-data', [DataController::class, 'getData']);
 Route::post('/get-products-data', [DataController::class, 'getProductsData']);
 
 
+Route::get('flak-large-xml', [DataController::class, 'getLargeXml']);
+
