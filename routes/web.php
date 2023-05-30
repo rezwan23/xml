@@ -26,3 +26,5 @@ Route::post('/get-products-data', [DataController::class, 'getProductsData']);
 
 Route::get('flak-large-xml', [DataController::class, 'getLargeXml']);
 
+Route::get('get-csv', [DataController::class, 'getCSV']);
+

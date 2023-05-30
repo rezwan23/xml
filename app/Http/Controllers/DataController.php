@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Schema\Blueprint;
 
@@ -31,7 +31,24 @@ class DataController extends Controller
             $arr = [];
         }
 
-        $data = DB::table('products')->whereIn('ProductNo', $arr)->get();
+        $data = DB::table('products')
+        ->join('product_images', 'products.ProductNo', '=', 'product_images.ProductNo')
+        ->whereIn('products.ProductNo', $arr)->get();
+
+        $txt = "Product Name,Product Description,Category,ProductCode,Media Standard Url 1,Media Standard AltText 1 \n";
+
+        foreach($data as $single){
+            $productNo = str_replace(',', '-', $single->ProductNo);
+            $productName = str_replace(',', '-', $single->Description);
+            $productImage = str_replace(',', '-', $single->ImageURL);
+            $Category = str_replace(',', '-', $single->Category);
+
+            $txt .= "$productName,$productName,$Category,$productNo,$productImage,  \n";
+        }
+
+        Storage::delete('data.csv');
+
+        Storage::put('data.csv', $txt);
 
         return $data;
     }
@@ -39,31 +56,27 @@ class DataController extends Controller
 
     public function getLargeXml(Request $request)
     {
-        Schema::dropIfExists('product_images');
+        Artisan::call('getflakimages');
 
-        Schema::create('product_images', function (Blueprint $table) {
-            $table->string('ProductNo');
-            $table->string('ImageURL');
-        });
+        return response (['message' => 'Done']);
+
+    }
 
 
-        $contents = Storage::get('flak.xml');
+    public function getCSV()
+    {
+        $data = DB::table('products')->get();
 
-        $new = simplexml_load_string($contents);
+        $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
 
-        // Convert into json
-        $con = json_encode($new);
-        
-        // Convert into associative array
-        $newArr = json_decode($con, true);
+        $txt = "Product Name,Product Description,Category,ProductCode,Media Standard Url 1,Media Standard AltText 1 \n";
 
-        $data = array_chunk($newArr['Products']['Product'], 200);
-
-        // dd($data);
-
-        foreach($data as $singleDataArr){
-            dispatch(new \App\Jobs\addProductImage($singleDataArr));
+        foreach($data as $single){
+            $txt .= str_replace(',', '-', $single->Description) . "," . str_replace(',', '-', $single->Description). ",". ",,$single->ProductNo,,, \n";
         }
+
+
+        Storage::put('ghani.csv', $txt);
 
     }
 }

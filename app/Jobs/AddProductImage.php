@@ -9,9 +9,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Arr;
 
-class addProductImage implements ShouldQueue
+class AddProductImage implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -33,8 +32,14 @@ class addProductImage implements ShouldQueue
     {
         $dataArr = [];
 
-        foreach($this->$data as $singleData){
-            array_push($dataArr, Arr:only($singleData, ['ProductNo', 'ImageURL']));
+        foreach($this->data as $singleData){
+            $newData = [];
+            foreach($singleData as $key => $value){
+                if($key == 'ProductNo' || $key == 'ImageURL' || $key == 'Category'){
+                        $newData[$key] = is_array($singleData[$key]) ? implode('/', $singleData[$key]) : str_replace(',', '/', $singleData[$key]);
+                }
+            }
+            array_push($dataArr, $newData);
         }
 
         DB::table('product_images')->insert($dataArr);
