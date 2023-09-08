@@ -26,5 +26,17 @@ Route::post('/get-products-data', [DataController::class, 'getProductsData']);
 
 Route::get('flak-large-xml', [DataController::class, 'getLargeXml']);
 
-Route::get('get-csv', [DataController::class, 'getCSV']);
+Route::post('/get-bring-product', [DataController::class, 'getBringProducts']);
+
+
+Route::get('product-data', [DataController::class, 'getProductsXLData']);
+
+Route::post('/create-bring-booking', [DataController::class, 'createBringBooking']);
+
+
+Route::post('/bring-order-status', [DataController::class, 'processBringOrderChangeRequest']);
+
+
+Route::post('/bring-create-hook', [DataController::class, 'createHook']);
+
 
