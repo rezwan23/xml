@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\BringOrder;
 use App\Models\Package;
+use App\Jobs\SendBringHookResponseToMC;
 
 
 class DataController extends Controller
@@ -296,6 +297,10 @@ class DataController extends Controller
 
             $orderNumber = $request->orderNumber;
 
+            $contactId = $request->contactId;
+
+            $email = $request->email;
+
             $consignmentNumber = $data['consignments'][0]['confirmation']['consignmentNumber'];
 
            
@@ -303,6 +308,8 @@ class DataController extends Controller
 
 
             $bringOrder = BringOrder::create([
+                'email' => $email,
+                'contact_id' => $contactId,
                 'order_number' => $orderNumber,
                 'bring_consignment_number' => $data['consignments'][0]['confirmation']['consignmentNumber'],
                 'labels' => $data['consignments'][0]['confirmation']['links']['labels'],
@@ -373,9 +380,17 @@ class DataController extends Controller
 
     public function processBringOrderChangeRequest(Request $request)
     {
+
+        \Log::channel('bring-hook-response')->info(json_encode($request->all()));
+
         $data = $request->all();
 
-        Log::info('Ghani => '. $data['package']);
+        $status = $data['status'];
+        $consignmentNumber = $data['shipment'];
+
+        dispatch(new SendBringHookResponseToMC($consignmentNumber, $status));
+
+
     }
 
 
@@ -394,5 +409,63 @@ class DataController extends Controller
             ])->post($url);
 
         return json_decode($hookRes->body(), true);
+    }
+
+
+    public function sendEmailRequestToMarketingCloud($orderNumber)
+    {
+        $data = '{"grant_type": "client_credentials","client_id": "h648p678uy7skfwd5bdn6o57","client_secret": "DvHRbrI8l9P1OzEPdpNLaqTW","scope": "email_read email_write email_send journeys_read list_and_subscribers_read","account_id": "100011507"}';
+        
+
+        $tokenRequestUrl = 'https://mcydsqwghhgrrz-nct4xrjcryrq8.auth.marketingcloudapis.com/v2/token';
+
+
+        $response = Http::withBody($data, 'application/json')
+        ->post($tokenRequestUrl);
+
+        if($response->status() == 200){
+            $data = json_decode($response->body(), true);
+
+            $token = $data['access_token'];
+
+
+            $bringOrder = BringOrder::where('order_number', $orderNumber)->first();
+
+            if($bringOrder){
+                $returnRequestNumber = $bringOrder->return_request_number + 1;
+
+                $url = 'https://mcydsqwghhgrrz-nct4xrjcryrq8.rest.marketingcloudapis.com/messaging/v1/email/messages/return-bring'.$returnRequestNumber;
+
+                $data = '{"definitionKey": "bring-return-pioner","recipient":{"contactKey": "","to": "ghani@tikweb.com","attributes": {"orderNumber": "'.$orderNumber.'"}}}';
+
+
+                $response = Http::withBody($data, 'application/json')
+                ->withHeaders(['Authorization' => 'Bearer '.$token])
+                ->post($url);
+
+                if($response->status() == 202){
+                    $bringOrder->update(['return_request_number' => $returnRequestNumber]);
+                    \Log::channel('mc-email-return')->info('OrderNumber : ' . $orderNumber . '=>' . $response->body());
+                    dd($response->body());
+                }else{
+                    \Log::channel('mc-email-return')->error('OrderNumber : ' . $orderNumber . '=>' . $response->body());
+                    dd($response->body());
+                }
+
+            }
+        }else{
+            \Log::channel('mc-email-return')->error('OrderNumber : ' . $orderNumber . '=>' . $response->body());
+        }
+    }
+
+
+    public function dispatchMCEmailJobs()
+    {
+        \Artisan::call('queue:work --max-jobs=1');
+    }
+
+    public function queueFlush()
+    {
+        \Artisan::call('queue:flush');
     }
 }

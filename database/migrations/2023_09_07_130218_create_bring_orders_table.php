@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('bring_orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_number');
+            $table->string('contact_id');
             $table->string('bring_consignment_number');
             $table->string('labels');
             $table->string('tracking');

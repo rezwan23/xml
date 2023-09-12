@@ -52,6 +52,26 @@ return [
     */
 
     'channels' => [
+        'bring-hook-response' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/bring-hook-response.log'),
+            'level' => 'info',
+        ],
+        'mc-email-return' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/mc-email-return.log'),
+            'level' => 'info',
+        ],
+        'mc-email-checkout-2' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/mc-email-checkout-2.log'),
+            'level' => 'info',
+        ],
+        'mc-email-checkout-3' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/mc-email-checkout-3.log'),
+            'level' => 'info',
+        ],
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],
