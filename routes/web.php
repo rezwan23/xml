@@ -36,13 +36,7 @@ Route::post('/create-bring-booking', [DataController::class, 'createBringBooking
 
 Route::post('/bring-order-status', [DataController::class, 'processBringOrderChangeRequest']);
 
-
 Route::post('/bring-create-hook', [DataController::class, 'createHook']);
 
-Route::get('/sent-email/{orderNumber}', [DataController::class, 'sendEmailRequestToMarketingCloud']);
-
-Route::get('/dispatch-mc-emails', [DataController::class, 'dispatchMCEmailJobs']);
-
-Route::get('/flush-queues', [DataController::class, 'queueFlush']);
 
 
