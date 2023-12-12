@@ -214,7 +214,7 @@ class DataController extends Controller
             if($singlePr['BringProductId'] == 5800){
                 foreach($points as $key => $singlePoint){
                     $array1 = $singlePr;
-                    $array1['serviceName'] = $array1['serviceName'].'-'.$singlePoint['address'];
+                    $array1['serviceName'] = '5800', $singlePoint['id'] ?? 'NA' . ']]' . $array1['serviceName'].'-'.$singlePoint['address'];
                     $array1['BringPickupPointId'] = $singlePoint['id'];
                     array_push($lastArr, $array1);
                 }
@@ -223,8 +223,6 @@ class DataController extends Controller
             }
         }
 
-        Log::info('Delivery Methods : ' . json_encode($lastArr));
-
         return $lastArr;
 
     }
@@ -232,13 +230,6 @@ class DataController extends Controller
 
     public function getProductsXLData(Request $request)
     {
-		if(!$request->fields){
-			return response(['message' => 'Please add fields in query string'], 422);
-		}
-		
-		
-		
-		
         $reqArr = explode(',', $request->fields);
 
         $txt = '';
@@ -290,8 +281,6 @@ class DataController extends Controller
         // return $request->body;
 
         // dd(json_encode($request->body));
-
-        // $data = str_replace(PHP_EOL, ' ', $data);e 
 
         $response = Http::withBody(json_encode($data), 'application/json')
         ->withHeaders([
